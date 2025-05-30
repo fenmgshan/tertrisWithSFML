@@ -1,3 +1,11 @@
+# tertrisWithSFML
+
+This project is the Tetris graphical implementation assignment for the *Introduction to Computing and Programming* course in the first semester of the second year at *BUPT*. The graphical interface relies on the SFML library; please ensure that you have installed this library. Additionally, the project build process depends on CMake, so please ensure that CMake is also installed on your system.
+
+- CMake: [CMake - Upgrade Your Software Build System](https://cmake.org/)
+
+- SFML: [Simple and Fast Multimedia Library](https://www.sfml-dev.org)
+
 # CMake SFML Project Template
 
 This repository template should allow for a fast and hassle-free kick start of your next SFML project using CMake.
