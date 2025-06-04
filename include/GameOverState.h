@@ -11,4 +11,14 @@ public:
 
 private:
     int finalScore;
+
+    sf::Font m_font;
+    sf::Text m_scoreText;
+    sf::Text m_retryButton;
+
+    sf::Clock clock;
+    float m_time = 0.0f;
+    const float m_totalDuration = 4.0f;
+
+    bool changeToTetrisGame = false;
 };
