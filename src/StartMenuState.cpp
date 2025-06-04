@@ -4,7 +4,7 @@
 
 StartMenuState::StartMenuState(sf::RenderWindow& window){}
 
-void StartMenuState::handleEvent(sf::Event& event) {
+void StartMenuState::handleEvent(const std::optional<sf::Event>& event, sf::RenderWindow& window) {
     /*
     这一块是处理开始菜单的事件，比如点击开始按钮等
     wait for you to implement the event handling logic!

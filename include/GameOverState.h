@@ -5,13 +5,10 @@
 class GameOverState : public GameState {
 public:
     GameOverState(int score);
-    void handleEvent(sf::Event& event) override;
+    void handleEvent(const std::optional<sf::Event>& event, sf::RenderWindow& window) override;
     void render(sf::RenderWindow& window) override;
     void update(std::unique_ptr<GameState>& currentState) override;
 
 private:
     int finalScore;
-    sf::Font font;
-    sf::Text gameOverText;
-    sf::Text retryButton;
 };

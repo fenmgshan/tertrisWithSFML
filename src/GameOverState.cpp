@@ -2,12 +2,13 @@
 #include "GameOverState.h"
 #include "StartMenuState.h"
 
-GameOverState::GameOverState(int score): finalScore(score){}
-void GameOverState::handleEvent(sf::Event& event) {
+GameOverState::GameOverState(int score) : finalScore(score){}
+void GameOverState::handleEvent(const std::optional<sf::Event>& event, sf::RenderWindow& window) {
     /*
     这一块是处理游戏结束状态的事件，比如点击重试按钮等
     wait for you to implement the event handling logic!
     */
+   window.close();
 }
 
 void GameOverState::render(sf::RenderWindow& window) {
@@ -18,8 +19,5 @@ void GameOverState::render(sf::RenderWindow& window) {
 }
 
 void GameOverState::update(std::unique_ptr<GameState>& currentState) {
-    // 直接关闭了游戏，等待你的修改
-    sf::Event closeEvent;
-    closeEvent.type = sf::Event::Closed;
-    handleEvent(closeEvent);
+    // 等待你的后续修改。
 }

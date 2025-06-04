@@ -5,9 +5,10 @@
 TetrisGame::TetrisGame() : 
     score (0), 
     running(true),
-    m_fontLoadSuccessful(false)
+    m_fontLoadSuccessful(false),
+    m_scoreText(m_font, "", 50)
 {
-    if (!m_font.loadFromFile("Aleo-Regular.ttf")) {
+    if (!m_font.openFromFile("Aleo-Regular.ttf")) {
         std::cerr << "Error: can't loading the font. Score will not display." << std::endl;
         m_fontLoadSuccessful = false;
     } else {
@@ -15,7 +16,7 @@ TetrisGame::TetrisGame() :
         m_scoreText.setFont(m_font);
         m_scoreText.setCharacterSize(50);
         m_scoreText.setFillColor(sf::Color::White);
-        m_scoreText.setPosition(10,10);
+        m_scoreText.setPosition(sf::Vector2f(10,10));
     }
     for (auto& row : board) {
         row.fill(0);
@@ -35,7 +36,7 @@ void TetrisGame::render(sf::RenderWindow& window) {
         for (int i=0; i<HEIGHT; ++i) {
             for (int j=0; j<WIDTH; ++j) {
                 sf::RectangleShape tile(sf::Vector2f(TILE_SIZE-1, TILE_SIZE-1));
-                tile.setPosition(static_cast<float>(j*TILE_SIZE), static_cast<float>(i*TILE_SIZE));
+                tile.setPosition(sf::Vector2f(j*TILE_SIZE, i*TILE_SIZE));
                 tile.setFillColor(numberToColor(board[i][j]));
                 if (board[i][j] == 0) { 
                     tile.setOutlineThickness(1);
@@ -50,8 +51,8 @@ void TetrisGame::render(sf::RenderWindow& window) {
             for (int r=0; r<BLOCK_SIZE; ++r) { 
                 for (int c=0; c<BLOCK_SIZE; ++c) { 
                     if (m_currentBlock.shape[r][c]) {
-                        currentTile.setPosition(static_cast<float>((m_currentBlock.x+c) * TILE_SIZE),
-                                                static_cast<float>((m_currentBlock.y+r) * TILE_SIZE)); 
+                        currentTile.setPosition(sf::Vector2f((m_currentBlock.x+c) * TILE_SIZE,
+                                                (m_currentBlock.y+r) * TILE_SIZE)); 
                         currentTile.setFillColor(numberToColor(m_currentBlock.type + 1));
                         currentTile.setOutlineThickness(0); 
                         window.draw(currentTile);
@@ -64,17 +65,27 @@ void TetrisGame::render(sf::RenderWindow& window) {
     if (m_fontLoadSuccessful) {
         m_scoreText.setString("Score: " + std::to_string(this->score));
         sf::FloatRect textRect = m_scoreText.getLocalBounds();
-        m_scoreText.setOrigin(textRect.left + textRect.width / 2.0f, textRect.top);
-        m_scoreText.setPosition(static_cast<float>(window.getSize().x)/2.0f, m_scoreText.getCharacterSize() + 10);
+        m_scoreText.setOrigin(
+            sf::Vector2f(
+                textRect.position.x + textRect.size.x /2.0f,
+                textRect.position.y
+            )
+        );
+        m_scoreText.setPosition(
+            sf::Vector2f(
+                window.getSize().x / 2.0f, 
+                m_scoreText.getCharacterSize() + 10
+            )
+        );
         window.draw(m_scoreText);
     }
     window.display();
 }
 
-void TetrisGame::handleEvent(sf::Event& event) {
-    if (event.type == sf::Event::KeyPressed) {
+void TetrisGame::handleEvent(const std::optional<sf::Event>& event, sf::RenderWindow& window) {
+    if (const auto* keyPress = event->getIf<sf::Event::KeyPressed>()) {
         if (!running) {
-            if (event.key.code == sf::Keyboard::R) {
+            if (keyPress->code == sf::Keyboard::Key::R) {
                 if (m_autoDropThread.joinable()) {
                         m_autoDropThread.join();
                 }
@@ -83,20 +94,20 @@ void TetrisGame::handleEvent(sf::Event& event) {
                 spawnNewBlockAndThread();
             }
         } else { 
-            switch (event.key.code) {
-                case sf::Keyboard::Left:
+            switch (keyPress->code) {
+                case sf::Keyboard::Key::Left:
                     moveLeft();
                     break;
-                case sf::Keyboard::Right:
+                case sf::Keyboard::Key::Right:
                     moveRight();
                     break;
-                case sf::Keyboard::Down:
+                case sf::Keyboard::Key::Down:
                     moveDown();
                     break;
-                case sf::Keyboard::Up:
+                case sf::Keyboard::Key::Up:
                     rotate();
                     break;
-                case sf::Keyboard::Space:
+                case sf::Keyboard::Key::Space:
                     {
                         std::lock_guard<std::mutex> lock(m_blockMutex);
                         if (!running) break;
@@ -105,7 +116,7 @@ void TetrisGame::handleEvent(sf::Event& event) {
                         }
                     }
                     break;
-                case sf::Keyboard::R:
+                case sf::Keyboard::Key::R:
                     stopAndJoinAutoDropThread(); 
                     reset(); 
                     running = true;
