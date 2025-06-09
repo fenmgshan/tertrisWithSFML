@@ -10,4 +10,14 @@ public:
     void render(sf::RenderWindow& window) override;
 
 private:
+    sf::Font m_font;
+    sf::Text m_titleText;
+    sf::Text m_startButton;
+    sf::Text m_quitButton;
+
+    sf::Clock clock;
+    float m_time = 0.0f;
+    const float m_totalDuration = 4.0f; 
+
+    bool changeToTetrisGame = false;
 };
