@@ -3,7 +3,15 @@
 #include "TetrisGame.h"
 #include <SFML/Graphics.hpp>
 
-StartMenuState::StartMenuState(sf::RenderWindow& window) {
+StartMenuState::StartMenuState(sf::RenderWindow& window)
+    : 
+      m_titleText(m_font, ""),
+      m_startButton(m_font, ""),
+      m_quitButton(m_font, ""),
+      m_time(0.0f),
+      m_totalDuration(4.0f),
+      changeToTetrisGame(false) 
+{
     if (!m_font.openFromFile("Aleo-Regular.ttf")) {
         throw std::runtime_error("Failed to load font");
     }
@@ -13,7 +21,7 @@ StartMenuState::StartMenuState(sf::RenderWindow& window) {
     m_titleText.setCharacterSize(80);
     m_titleText.setFillColor(sf::Color::White);
     m_titleText.setPosition(
-        sf::Vector2f(window.getSize().x / 2.0 - m_titleText.getGlobalBounds().position.x,
+        sf::Vector2f(100.0,
                     window.getSize().y / 3.0)
     );
 
@@ -22,7 +30,7 @@ StartMenuState::StartMenuState(sf::RenderWindow& window) {
     m_startButton.setCharacterSize(50);
     m_startButton.setFillColor(sf::Color::White);
     m_startButton.setPosition(
-        sf::Vector2f(window.getSize().x / 2.0 - m_startButton.getGlobalBounds().position.x / 2.0,
+        sf::Vector2f(100.0,
                     window.getSize().y / 2.0)
     );
 
@@ -31,13 +39,13 @@ StartMenuState::StartMenuState(sf::RenderWindow& window) {
     m_quitButton.setCharacterSize(50);
     m_quitButton.setFillColor(sf::Color::White);
     m_quitButton.setPosition(
-        sf::Vector2f(window.getSize().x / 2.0 - m_quitButton.getGlobalBounds().position.x / 2.0,
+        sf::Vector2f(100.0,
                     window.getSize().y / 2.0 + 100)
     );
 }
 
 void StartMenuState::handleEvent(const std::optional<sf::Event>& event, sf::RenderWindow& window) {
-    if (event && event->type == sf::Event::MouseButtonPressed) {
+    if (event && event->is<sf::Event::MouseButtonPressed>()) {
         const auto& mousePos = sf::Mouse::getPosition(window);
         
         if (m_startButton.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
