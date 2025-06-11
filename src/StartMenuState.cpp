@@ -7,7 +7,6 @@ StartMenuState::StartMenuState(sf::RenderWindow& window)
     : 
       m_titleText(m_font, ""),
       m_startButton(m_font, ""),
-      m_quitButton(m_font, ""),
       m_time(0.0f),
       m_totalDuration(4.0f),
       changeToTetrisGame(false) 
@@ -34,14 +33,6 @@ StartMenuState::StartMenuState(sf::RenderWindow& window)
                     window.getSize().y / 2.0)
     );
 
-    m_quitButton.setFont(m_font);
-    m_quitButton.setString("Quit");
-    m_quitButton.setCharacterSize(50);
-    m_quitButton.setFillColor(sf::Color::White);
-    m_quitButton.setPosition(
-        sf::Vector2f(100.0,
-                    window.getSize().y / 2.0 + 100)
-    );
 }
 
 void StartMenuState::handleEvent(const std::optional<sf::Event>& event, sf::RenderWindow& window) {
@@ -52,9 +43,6 @@ void StartMenuState::handleEvent(const std::optional<sf::Event>& event, sf::Rend
             changeToTetrisGame = true;
         }
         
-        if (m_quitButton.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
-            window.close();
-        }
     }
 }
 
@@ -80,7 +68,6 @@ void StartMenuState::render(sf::RenderWindow& window) {
 
     sf::Vector2i mousePos = sf::Mouse::getPosition(window);
     bool isStartHovered = m_startButton.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos));
-    bool isQuitHovered = m_quitButton.getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos));
 
     if (isStartHovered) {
         m_startButton.setFillColor(sf::Color::White);
@@ -94,20 +81,7 @@ void StartMenuState::render(sf::RenderWindow& window) {
         m_startButton.setOutlineThickness(0);
     }
 
-    if (isQuitHovered) {
-        m_quitButton.setFillColor(sf::Color::White);
-        m_quitButton.setCharacterSize(60);
-        m_quitButton.setOutlineColor(sf::Color::Yellow);
-        m_quitButton.setOutlineThickness(5);
-    } else {
-        m_quitButton.setFillColor(sf::Color::White);
-        m_quitButton.setCharacterSize(50);
-        m_quitButton.setOutlineColor(sf::Color::Transparent);
-        m_quitButton.setOutlineThickness(0);
-    }
-
     window.draw(background);
     window.draw(m_titleText);
     window.draw(m_startButton);
-    window.draw(m_quitButton);
 }
