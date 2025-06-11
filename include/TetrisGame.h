@@ -18,6 +18,7 @@ public:
 private:
     Board board;
     int score;
+    std::array<int, 2> blockList;
 
     sf::Font m_font;
     sf::Text m_scoreText;
@@ -26,6 +27,7 @@ private:
     std::atomic<bool> running;
 
     Block m_currentBlock;
+    Block m_nextBlock;
 
     std::mutex m_blockMutex;
     std::thread m_autoDropThread;

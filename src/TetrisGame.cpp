@@ -6,7 +6,8 @@ TetrisGame::TetrisGame() :
     score (0), 
     running(true),
     m_fontLoadSuccessful(false),
-    m_scoreText(m_font, "", 50)
+    m_scoreText(m_font, "", 50),
+    blockList{rand() % 7, rand() % 7}
 {
     if (!m_font.openFromFile("Aleo-Regular.ttf")) {
         std::cerr << "Error: can't loading the font. Score will not display." << std::endl;
@@ -56,6 +57,21 @@ void TetrisGame::render(sf::RenderWindow& window) {
                         currentTile.setFillColor(numberToColor(m_currentBlock.type + 1));
                         currentTile.setOutlineThickness(0); 
                         window.draw(currentTile);
+                    }
+                }
+            }
+            sf::RectangleShape nextTile(sf::Vector2f(TILE_SIZE-1, TILE_SIZE-1));
+            sf::Color nextTileColor = numberToColor(blockList[1] + 1);
+            nextTileColor.a = 50;
+            for (int r=0; r<BLOCK_SIZE; ++r) {
+                for (int c=0; c<BLOCK_SIZE; ++c) {
+                    if (m_nextBlock.shape[r][c]) {
+                        nextTile.setPosition(sf::Vector2f(
+                            ((WIDTH/2 - BLOCK_SIZE/2) + c) * TILE_SIZE, r * TILE_SIZE)
+                        );
+                        nextTile.setFillColor(nextTileColor);
+                        nextTile.setOutlineThickness(0);
+                        window.draw(nextTile);
                     }
                 }
             }
@@ -197,7 +213,10 @@ void TetrisGame::spawnNewBlockAndThread() {
         std::lock_guard<std::mutex> lock(m_blockMutex);
         m_currentBlock.x = WIDTH/2 - BLOCK_SIZE/2;
         m_currentBlock.y = 0;
-        m_currentBlock.initShape(rand() % m_currentBlock.getShapeAmount(), 0);
+        m_currentBlock.initShape(blockList.at(0), 0);
+        m_nextBlock.x = WIDTH/2 - BLOCK_SIZE/2;
+        m_nextBlock.y = 0;
+        m_nextBlock.initShape(blockList.at(1), 0);
     }
     if (m_autoDropThread.joinable()) {
         m_autoDropThread.join();
@@ -292,11 +311,13 @@ void TetrisGame::mergeBlock_unlock(int x, int y, const Shape& shape, int type) {
                 int boardX = x + j;
                 int boardY = y + i;
                 if (boardY >= 0 && boardY < HEIGHT && boardX >= 0 && boardX < WIDTH) {
-                    board[boardY][boardX] = type + 1; // +1 to avoid 0 for empty
+                    board[boardY][boardX] = type + 1; 
                 }
             }
         }
     }
+    blockList[0] = blockList[1];
+    blockList[1] = rand() % m_currentBlock.getShapeAmount();
 }
 
 void TetrisGame::moveDown() {
